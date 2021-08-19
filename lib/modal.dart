@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'dart:convert';
 
 class Album {
-  final int userId;
-  final int id;
+  final String userId;
+  final String id;
   final String title;
 
   Album({
@@ -12,7 +12,8 @@ class Album {
     this.title,
   });
 
-  factory Album.fromJson(Map<String, dynamic> json) {
+  factory Album.fromJson(Map<dynamic, dynamic> json) {
+    print(json);
     return Album(
         userId: json['nowplaying'],
       id: json['servername'],

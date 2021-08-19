@@ -3,11 +3,11 @@ import 'package:audio_player/musicapi.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-
+import 'musicapi.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:http/io_client.dart';
-
+import 'modal.dart';
 /*
 Future<Album> fetchAlbum() async {
   //final response = await http
@@ -107,6 +107,15 @@ class _MyAppState extends State<MyAppp> {
   @override
   void initState() {
     super.initState();
+
+    fetchData();
+  }
+  Album album;
+  fetchData() async {
+    album = await  Music().fetchmusicinfo();
+    setState(() {
+
+    });
   }
 
   bool play_pause = false;
@@ -131,9 +140,9 @@ class _MyAppState extends State<MyAppp> {
       ),
       home: Scaffold(
         body: FutureBuilder(
-            future: Music().fetchmusicinfo(),
+            future: fetchData(),
             builder: (context, snapshot) {
-              if (snapshot.hasData) {
+              if (album !=null) {
                 return Container(
                   height: height * 1,
                   decoration: BoxDecoration(
@@ -214,7 +223,7 @@ class _MyAppState extends State<MyAppp> {
                         left: widht * 0.34,
                         top: height * 0.57,
                         child: Text(
-                          snapshot.data,
+                          album.title,
                           style: TextStyle(
                               fontSize: widht * 0.06,
                               color: Colors.white,
