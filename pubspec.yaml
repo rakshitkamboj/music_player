@@ -32,6 +32,7 @@ dependencies:
   provider:
   http:
   dio: ^4.0.0
+  just_audio_background: ^0.0.1-beta.1
 
 dev_dependencies:
   flutter_test:

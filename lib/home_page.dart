@@ -8,6 +8,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:http/io_client.dart';
 import 'modal.dart';
+
 /*
 Future<Album> fetchAlbum() async {
   //final response = await http
@@ -110,12 +111,11 @@ class _MyAppState extends State<MyAppp> {
 
     fetchData();
   }
+
   Album album;
   fetchData() async {
-    album = await  Music().fetchmusicinfo();
-    setState(() {
-
-    });
+    album = await Music().fetchmusicinfo();
+    setState(() {});
   }
 
   bool play_pause = false;
@@ -142,7 +142,7 @@ class _MyAppState extends State<MyAppp> {
         body: FutureBuilder(
             future: fetchData(),
             builder: (context, snapshot) {
-              if (album !=null) {
+              if (album != null) {
                 return Container(
                   height: height * 1,
                   decoration: BoxDecoration(
@@ -154,6 +154,32 @@ class _MyAppState extends State<MyAppp> {
                   )),
                   child: Stack(
                     children: <Widget>[
+                      Positioned(
+                          left: widht * 0.01,
+                        top: height * 0.57,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              
+                              album.title,
+                              style: TextStyle(
+                                  fontSize: widht * 0.06,
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold),
+                                overflow: TextOverflow.clip,
+                            ),
+                      Text(
+                        "Avichi",
+                        style: TextStyle(
+                            fontSize: widht * 0.04,
+                            color: Colors.grey.shade300,
+                            fontWeight: FontWeight.bold),
+                      ),
+                          ],
+                        ),
+                      ),
                       Positioned(
                         top: height * 0.08,
                         left: widht * 0.04,
@@ -212,35 +238,13 @@ class _MyAppState extends State<MyAppp> {
                         ),
                       ),
                       Positioned(
-                        left: widht * 0.12,
-                        top: height * 0.21,
-                        child: Image.asset(
-                          "assets/images/art.png",
-                          width: widht * 0.76,
-                        ),
-                      ),
-                      Positioned(
-                        left: widht * 0.34,
-                        top: height * 0.57,
-                        child: Text(
-                          album.title,
-                          style: TextStyle(
-                              fontSize: widht * 0.06,
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold),
-                        ),
-                      ),
-                      Positioned(
-                        left: widht * 0.44,
-                        top: height * 0.62,
-                        child: Text(
-                          "Avichi",
-                          style: TextStyle(
-                              fontSize: widht * 0.04,
-                              color: Colors.grey.shade300,
-                              fontWeight: FontWeight.bold),
-                        ),
-                      ),
+                          left: widht * 0.25,
+                          top: height * 0.27,
+                          child: CircleAvatar(
+                            radius: widht * 0.25,
+                            backgroundImage: NetworkImage(album.bg),
+                          )),
+                     
                       Positioned(
                         left: widht * 0.35,
                         top: height * 0.68,
