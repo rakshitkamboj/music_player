@@ -1,5 +1,6 @@
 import 'dart:io';
-
+import 'package:audio_player/musicapi.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 
@@ -7,6 +8,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:http/io_client.dart';
 
+/*
 Future<Album> fetchAlbum() async {
   //final response = await http
   // .get(Uri.parse('https://jsonplaceholder.typicode.com/albums/1'));
@@ -24,44 +26,8 @@ Future<Album> fetchAlbum() async {
   }
 }
 
-class Album {
-  final int userId;
-  final int id;
-  final String title;
-
-  Album({
-    this.userId,
-    this.id,
-    this.title,
-  });
-
-  factory Album.fromJson(Map<String, dynamic> json) {
-    return Album(
-      //  userId: json['nowplaying'],
-      //id: json['servername'],
-      title: json['title'],
-    );
-  }
-}
 
 String url = 'https://server-26.stream-server.nl:2000/json/stream/HetStamcafe';
-
-Future<Album> getApplicationsAPICall() async {
-  bool trustSelfSigned = true;
-  HttpClient httpClient = new HttpClient()
-    ..badCertificateCallback =
-        ((X509Certificate cert, String host, int port) => trustSelfSigned);
-  IOClient ioClient = new IOClient(httpClient);
-
-  final response = await ioClient.post(
-    Uri.parse(url),
-    headers: {
-      HttpHeaders.contentTypeHeader: 'application/json',
-      //HttpHeaders.authorizationHeader: '',
-    },
-  );
-  return Album.fromJson(jsonDecode(response.body));
-}
 
 String currencyRequestToJson(CurrencyRequestModel data) {
   final dyn = data.toJson();
@@ -129,7 +95,7 @@ class CurrencyResponseModel {
     );
   }
 }
-
+*/
 class MyAppp extends StatefulWidget {
   const MyAppp({Key key}) : super(key: key);
 
@@ -138,13 +104,9 @@ class MyAppp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyAppp> {
-  Future<Album> futureAlbum;
-
   @override
   void initState() {
     super.initState();
-
-    futureAlbum = getApplicationsAPICall();
   }
 
   bool play_pause = false;
@@ -168,152 +130,176 @@ class _MyAppState extends State<MyAppp> {
         primarySwatch: Colors.blue,
       ),
       home: Scaffold(
-          body: Container(
-        height: height * 1,
-        decoration: BoxDecoration(
-            image: DecorationImage(
-              colorFilter: ColorFilter.mode(Colors.black.withOpacity(0.5), BlendMode.overlay),
-                image: AssetImage("assets/images/bg.png"), fit: BoxFit.cover,)),
-        child: Stack(
-          children: <Widget>[
-            Positioned(
-              top: height * 0.08,
-              left: widht * 0.04,
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Image.asset(
-                    'assets/images/Logo.png',
-                    width: widht * 0.4,
-                  ),
-                  SizedBox(
-                    width: widht * 0.05,
-                  ),
-                  Image.asset(
-                    "assets/images/Facebook.png",
-                    width: widht * 0.083,
-                  ),
-                  SizedBox(
-                    width: widht * 0.01,
-                  ),
-                  Image.asset(
-                    "assets/images/Facebook.png",
-                    width: widht * 0.083,
-                  ),
-                  SizedBox(
-                    width: widht * 0.01,
-                  ),
-                  Image.asset(
-                    "assets/images/Facebook.png",
-                    width: widht * 0.083,
-                  ),
-                  SizedBox(
-                    width: widht * 0.01,
-                  ),
-                  Image.asset(
-                    "assets/images/Facebook.png",
-                    width: widht * 0.083,
-                  ),
-                  SizedBox(
-                    width: widht * 0.01,
-                  ),
-                  Image.asset(
-                    "assets/images/Facebook.png",
-                    width: widht * 0.083,
-                  ),
-                ],
-              ),
-            ),
-
-            Positioned(
-              top: height * 0.25,
-              left: widht * 0.2,
-              child: Image.asset(
-                "assets/images/Circle Pattern.png",
-                width: widht * 0.6,
-              ),
-            ),
-            Positioned(
-              left: widht * 0.12,
-              top: height * 0.21,
-              child: Image.asset(
-                "assets/images/art.png",
-                width: widht * 0.76,
-              ),
-            ),
-            Positioned(
-              left: widht * 0.34,
-              top: height * 0.57,
-              child: Text(
-                "Wake Me Up",
-                style: TextStyle(
-                    fontSize: widht * 0.06,
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold),
-              ),
-            ),
-            Positioned(
-              left: widht * 0.44,
-              top: height * 0.62,
-              child: Text(
-                "Avichi",
-                style: TextStyle(
-                    fontSize: widht * 0.04,
-                    color: Colors.grey.shade300,
-                    fontWeight: FontWeight.bold),
-              ),
-            ),
-            Positioned(
-              left: widht * 0.35,
-              top: height * 0.68,
-              child: GestureDetector(
-                  onTap: () {
-                    switchh();
-                  },
-                  child: Icon(
-                    play_pause
-                        ? Icons.play_circle_outline_rounded
-                        : Icons.pause_circle_outline_rounded,
-                    color: Colors.white,
-                    size: widht * 0.28,
+        body: FutureBuilder(
+            future: Music().fetchmusicinfo(),
+            builder: (context, snapshot) {
+              if (snapshot.hasData) {
+                return Container(
+                  height: height * 1,
+                  decoration: BoxDecoration(
+                      image: DecorationImage(
+                    colorFilter: ColorFilter.mode(
+                        Colors.black.withOpacity(0.5), BlendMode.overlay),
+                    image: AssetImage("assets/images/bg.png"),
+                    fit: BoxFit.cover,
                   )),
-            ),
-            Positioned(
-              top: height*0.86,
-              left: widht*0.04,
-              child: Row(
-                children: [
-                  Image.asset('assets/images/Airplay 1.png',width: widht*0.09,),
-                   SliderTheme(
-                  data: SliderThemeData(
-                    trackHeight: 5,
-                    thumbShape: RoundSliderThumbShape(enabledThumbRadius: 5)
-                  ),
-                  child: Slider(
-                     value: 2,
-                     
-                      activeColor: Colors.white,
-                      inactiveColor: Color(0xff707070),
-                      onChanged: (value) {
-                   
+                  child: Stack(
+                    children: <Widget>[
+                      Positioned(
+                        top: height * 0.08,
+                        left: widht * 0.04,
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Image.asset(
+                              'assets/images/Logo.png',
+                              width: widht * 0.4,
+                            ),
+                            SizedBox(
+                              width: widht * 0.05,
+                            ),
+                            Image.asset(
+                              "assets/images/Facebook.png",
+                              width: widht * 0.083,
+                            ),
+                            SizedBox(
+                              width: widht * 0.01,
+                            ),
+                            Image.asset(
+                              "assets/images/Facebook.png",
+                              width: widht * 0.083,
+                            ),
+                            SizedBox(
+                              width: widht * 0.01,
+                            ),
+                            Image.asset(
+                              "assets/images/Facebook.png",
+                              width: widht * 0.083,
+                            ),
+                            SizedBox(
+                              width: widht * 0.01,
+                            ),
+                            Image.asset(
+                              "assets/images/Facebook.png",
+                              width: widht * 0.083,
+                            ),
+                            SizedBox(
+                              width: widht * 0.01,
+                            ),
+                            Image.asset(
+                              "assets/images/Facebook.png",
+                              width: widht * 0.083,
+                            ),
+                          ],
+                        ),
+                      ),
 
-                      },
-                      min: 0,
-                     max: 4,
-                    ),
-                  ),
-                  SizedBox(width: widht*0.14,),
-                Image.asset('assets/images/Airplay 1.png',width: widht*0.09,),
-                SizedBox(width: widht*0.03,),
-                Image.asset('assets/images/Airplay 1.png',width: widht*0.09,),
-                ],
-              ),
-            ),
-            //Container
-          ], //<Widget>[]
-        ), //SizedBox
-      ) //,
-          ),
+                      Positioned(
+                        top: height * 0.25,
+                        left: widht * 0.2,
+                        child: Image.asset(
+                          "assets/images/Circle Pattern.png",
+                          width: widht * 0.6,
+                        ),
+                      ),
+                      Positioned(
+                        left: widht * 0.12,
+                        top: height * 0.21,
+                        child: Image.asset(
+                          "assets/images/art.png",
+                          width: widht * 0.76,
+                        ),
+                      ),
+                      Positioned(
+                        left: widht * 0.34,
+                        top: height * 0.57,
+                        child: Text(
+                          snapshot.data,
+                          style: TextStyle(
+                              fontSize: widht * 0.06,
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                      Positioned(
+                        left: widht * 0.44,
+                        top: height * 0.62,
+                        child: Text(
+                          "Avichi",
+                          style: TextStyle(
+                              fontSize: widht * 0.04,
+                              color: Colors.grey.shade300,
+                              fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                      Positioned(
+                        left: widht * 0.35,
+                        top: height * 0.68,
+                        child: GestureDetector(
+                            onTap: () {
+                              switchh();
+                            },
+                            child: Icon(
+                              play_pause
+                                  ? Icons.play_circle_outline_rounded
+                                  : Icons.pause_circle_outline_rounded,
+                              color: Colors.white,
+                              size: widht * 0.28,
+                            )),
+                      ),
+                      Positioned(
+                        top: height * 0.86,
+                        left: widht * 0.04,
+                        child: Row(
+                          children: [
+                            Image.asset(
+                              'assets/images/Airplay 1.png',
+                              width: widht * 0.09,
+                            ),
+                            SliderTheme(
+                              data: SliderThemeData(
+                                  trackHeight: 5,
+                                  thumbShape: RoundSliderThumbShape(
+                                      enabledThumbRadius: 5)),
+                              child: Slider(
+                                value: 2,
+                                activeColor: Colors.white,
+                                inactiveColor: Color(0xff707070),
+                                onChanged: (value) {},
+                                min: 0,
+                                max: 4,
+                              ),
+                            ),
+                            SizedBox(
+                              width: widht * 0.14,
+                            ),
+                            Image.asset(
+                              'assets/images/Airplay 1.png',
+                              width: widht * 0.09,
+                            ),
+                            SizedBox(
+                              width: widht * 0.03,
+                            ),
+                            Image.asset(
+                              'assets/images/Airplay 1.png',
+                              width: widht * 0.09,
+                            ),
+                          ],
+                        ),
+                      ),
+                      //Container
+                    ], //<Widget>[]
+                  ), //SizedBox
+                );
+              } else {
+                return Container(
+                  child: CircularProgressIndicator(),
+                );
+              }
+            }),
+      ),
+
+      //,
     );
   }
 }
