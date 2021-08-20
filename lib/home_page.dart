@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:audio_player/musicapi.dart';
+import 'package:audioplayers/audioplayers.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -119,15 +120,49 @@ class _MyAppState extends State<MyAppp> {
   }
 
   bool play_pause = false;
-  void switchh() {
-    setState(() {
-      // ignore: unnecessary_statements
-      if (play_pause == false) {
-        play_pause = true;
-      } else {
-        play_pause = false;
+  void switchh() async {
+    var url = "https://hetstamcafe.stream-server.nl/stream";
+    if (play_pause) {
+      var res = await audioPlayer.pause();
+      if (res == 1) {
+        setState(() {
+          play_pause = false;
+        });
       }
+    } else {
+      var res = await audioPlayer.play(url, isLocal: true);
+      if (res == 1) {
+        setState(() {
+          play_pause = true;
+        });
+      }
+    }
+    audioPlayer.onDurationChanged.listen((Duration dd) {
+      setState(() {
+        duration = dd;
+      });
     });
+    audioPlayer.onAudioPositionChanged.listen((Duration dd) {
+      setState(() {
+        position = dd;
+      });
+    });
+  }
+
+  AudioPlayer audioPlayer = new AudioPlayer();
+  Duration duration = new Duration();
+  Duration position = new Duration();
+
+  Widget slider() {
+    return Slider.adaptive(
+        min: 0.0,
+        value: position.inSeconds.toDouble(),
+        max: duration.inSeconds.toDouble(),
+        onChanged: (double value) {
+          setState(() {
+            audioPlayer.seek(new Duration(seconds: value.toInt()));
+          });
+        });
   }
 
   @override
@@ -155,28 +190,27 @@ class _MyAppState extends State<MyAppp> {
                   child: Stack(
                     children: <Widget>[
                       Positioned(
-                          left: widht * 0.01,
+                        left: widht * 0.01,
                         top: height * 0.57,
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.center,
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Text(
-                              
                               album.title,
                               style: TextStyle(
                                   fontSize: widht * 0.06,
                                   color: Colors.white,
                                   fontWeight: FontWeight.bold),
-                                overflow: TextOverflow.clip,
+                              overflow: TextOverflow.clip,
                             ),
-                      Text(
-                        "Avichi",
-                        style: TextStyle(
-                            fontSize: widht * 0.04,
-                            color: Colors.grey.shade300,
-                            fontWeight: FontWeight.bold),
-                      ),
+                            Text(
+                              "Avichi",
+                              style: TextStyle(
+                                  fontSize: widht * 0.04,
+                                  color: Colors.grey.shade300,
+                                  fontWeight: FontWeight.bold),
+                            ),
                           ],
                         ),
                       ),
@@ -244,7 +278,7 @@ class _MyAppState extends State<MyAppp> {
                             radius: widht * 0.25,
                             backgroundImage: NetworkImage(album.bg),
                           )),
-                     
+
                       Positioned(
                         left: widht * 0.35,
                         top: height * 0.68,
@@ -270,19 +304,11 @@ class _MyAppState extends State<MyAppp> {
                               width: widht * 0.09,
                             ),
                             SliderTheme(
-                              data: SliderThemeData(
-                                  trackHeight: 5,
-                                  thumbShape: RoundSliderThumbShape(
-                                      enabledThumbRadius: 5)),
-                              child: Slider(
-                                value: 2,
-                                activeColor: Colors.white,
-                                inactiveColor: Color(0xff707070),
-                                onChanged: (value) {},
-                                min: 0,
-                                max: 4,
-                              ),
-                            ),
+                                data: SliderThemeData(
+                                    trackHeight: 5,
+                                    thumbShape: RoundSliderThumbShape(
+                                        enabledThumbRadius: 5)),
+                                child: slider()),
                             SizedBox(
                               width: widht * 0.14,
                             ),
