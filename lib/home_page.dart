@@ -10,6 +10,7 @@ import 'package:http/http.dart' as http;
 import 'package:http/io_client.dart';
 import 'modal.dart';
 import 'package:provider/provider.dart';
+import 'package:volume/volume.dart';
 /*
 Future<Album> fetchAlbum() async {
   //final response = await http
@@ -107,10 +108,28 @@ class MyAppp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyAppp> {
+  double _sliderValue = 0.0;
+  int maxVol, currentVol;
+
+  Future<void> initPlatformState() async {
+    await Volume.controlVolume(AudioManager
+        .STREAM_MUSIC); // you can change which volume you want to change.
+  }
+
+  updateVolumes() async {
+    maxVol = await Volume.getMaxVol;
+    currentVol = await Volume.getVol;
+    setState(() {});
+  }
+
+  setVol(int i) async {
+    await Volume.setVol(i);
+  }
+
   @override
   void initState() {
     super.initState();
-
+    initPlatformState();
     fetchData();
   }
 
@@ -198,7 +217,7 @@ class _MyAppState extends State<MyAppp> {
                                 width: widht * 0.05,
                               ),
                               Image.asset(
-                                "assets/images/Facebook.png",
+                                "assets/images/Spotify.png",
                                 width: widht * 0.083,
                               ),
                               SizedBox(
@@ -212,21 +231,21 @@ class _MyAppState extends State<MyAppp> {
                                 width: widht * 0.01,
                               ),
                               Image.asset(
-                                "assets/images/Facebook.png",
+                                "assets/images/Insyagram.png",
                                 width: widht * 0.083,
                               ),
                               SizedBox(
                                 width: widht * 0.01,
                               ),
                               Image.asset(
-                                "assets/images/Facebook.png",
+                                "assets/images/email.png",
                                 width: widht * 0.083,
                               ),
                               SizedBox(
                                 width: widht * 0.01,
                               ),
                               Image.asset(
-                                "assets/images/Facebook.png",
+                                "assets/images/Website.png",
                                 width: widht * 0.083,
                               ),
                             ],
@@ -254,7 +273,9 @@ class _MyAppState extends State<MyAppp> {
                           top: height * 0.68,
                           child: GestureDetector(
                               onTap: () {
-                                 myAudioModel.audioState=="Playing"? myAudioModel.pauseAudio():myAudioModel.playAudio();
+                                myAudioModel.audioState == "Playing"
+                                    ? myAudioModel.pauseAudio()
+                                    : myAudioModel.playAudio();
                               },
                               child: Icon(
                                 myAudioModel.audioState == "Playing"
@@ -270,23 +291,27 @@ class _MyAppState extends State<MyAppp> {
                           child: Row(
                             children: [
                               Image.asset(
-                                'assets/images/Airplay 1.png',
+                                'assets/images/Volume1.png',
                                 width: widht * 0.09,
                               ),
                               SliderTheme(
-                                data: SliderThemeData(
-                                    trackHeight: 5,
-                                    thumbShape: RoundSliderThumbShape(
-                                        enabledThumbRadius: 5)),
-                                child: Slider(
-                                  value: 2,
-                                  activeColor: Colors.white,
-                                  inactiveColor: Color(0xff707070),
-                                  onChanged: (value) {},
-                                  min: 0,
-                                  max: 4,
-                                ),
-                              ),
+                                  data: SliderThemeData(
+                                      trackHeight: 5,
+                                      thumbShape: RoundSliderThumbShape(
+                                          enabledThumbRadius: 5)),
+                                  child: Slider(
+                                    activeColor: Colors.white,
+                                    min: 0.0,
+                                    max: 15.0,
+                                    onChanged: (newRating) async {
+                                      setState(() {
+                                        _sliderValue = newRating;
+                                      });
+                                      await setVol(newRating.toInt());
+                                      await updateVolumes();
+                                    },
+                                    value: _sliderValue,
+                                  )),
                               SizedBox(
                                 width: widht * 0.14,
                               ),
@@ -298,7 +323,7 @@ class _MyAppState extends State<MyAppp> {
                                 width: widht * 0.03,
                               ),
                               Image.asset(
-                                'assets/images/Airplay 1.png',
+                                'assets/images/Share1.png',
                                 width: widht * 0.09,
                               ),
                             ],

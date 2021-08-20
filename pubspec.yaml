@@ -33,6 +33,7 @@ dependencies:
   http:
   dio: ^4.0.0
   audioplayers: ^0.16.1
+  volume: ^1.0.1
   
 
 dev_dependencies:
