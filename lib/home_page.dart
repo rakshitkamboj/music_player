@@ -1,6 +1,6 @@
 import 'dart:io';
 import 'package:audio_player/musicapi.dart';
-import 'package:audioplayers/audioplayers.dart';
+import 'package:audio_player/myauido.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -9,7 +9,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:http/io_client.dart';
 import 'modal.dart';
-
+import 'package:provider/provider.dart';
 /*
 Future<Album> fetchAlbum() async {
   //final response = await http
@@ -98,6 +98,7 @@ class CurrencyResponseModel {
   }
 }
 */
+
 class MyAppp extends StatefulWidget {
   const MyAppp({Key key}) : super(key: key);
 
@@ -120,225 +121,203 @@ class _MyAppState extends State<MyAppp> {
   }
 
   bool play_pause = false;
-  void switchh() async {
-    var url = "https://hetstamcafe.stream-server.nl/stream";
-    if (play_pause) {
-      var res = await audioPlayer.pause();
-      if (res == 1) {
-        setState(() {
-          play_pause = false;
-        });
+  void switchh() {
+    setState(() {
+      // ignore: unnecessary_statements
+      if (play_pause == false) {
+        play_pause = true;
+        MyAudio().playAudio();
+      } else {
+        play_pause = false;
+        MyAudio().pauseAudio()();
       }
-    } else {
-      var res = await audioPlayer.play(url, isLocal: true);
-      if (res == 1) {
-        setState(() {
-          play_pause = true;
-        });
-      }
-    }
-    audioPlayer.onDurationChanged.listen((Duration dd) {
-      setState(() {
-        duration = dd;
-      });
     });
-    audioPlayer.onAudioPositionChanged.listen((Duration dd) {
-      setState(() {
-        position = dd;
-      });
-    });
-  }
-
-  AudioPlayer audioPlayer = new AudioPlayer();
-  Duration duration = new Duration();
-  Duration position = new Duration();
-
-  Widget slider() {
-    return Slider.adaptive(
-        min: 0.0,
-        value: position.inSeconds.toDouble(),
-        max: duration.inSeconds.toDouble(),
-        onChanged: (double value) {
-          setState(() {
-            audioPlayer.seek(new Duration(seconds: value.toInt()));
-          });
-        });
   }
 
   @override
   Widget build(BuildContext context) {
     double height = MediaQuery.of(context).size.height;
     double widht = MediaQuery.of(context).size.width;
-    return MaterialApp(
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: Scaffold(
-        body: FutureBuilder(
-            future: fetchData(),
-            builder: (context, snapshot) {
-              if (album != null) {
-                return Container(
-                  height: height * 1,
-                  decoration: BoxDecoration(
-                      image: DecorationImage(
-                    colorFilter: ColorFilter.mode(
-                        Colors.black.withOpacity(0.5), BlendMode.overlay),
-                    image: AssetImage("assets/images/bg.png"),
-                    fit: BoxFit.cover,
-                  )),
-                  child: Stack(
-                    children: <Widget>[
-                      Positioned(
-                        left: widht * 0.01,
-                        top: height * 0.57,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              album.title,
-                              style: TextStyle(
-                                  fontSize: widht * 0.06,
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold),
-                              overflow: TextOverflow.clip,
-                            ),
-                            Text(
-                              "Avichi",
-                              style: TextStyle(
-                                  fontSize: widht * 0.04,
-                                  color: Colors.grey.shade300,
-                                  fontWeight: FontWeight.bold),
-                            ),
-                          ],
+    return Consumer<MyAudio>(
+      builder: (_, myAudioModel, child) => MaterialApp(
+        theme: ThemeData(
+          primarySwatch: Colors.blue,
+        ),
+        home: Scaffold(
+          body: FutureBuilder(
+              future: fetchData(),
+              builder: (context, snapshot) {
+                if (album != null) {
+                  return Container(
+                    height: height * 1,
+                    decoration: BoxDecoration(
+                        image: DecorationImage(
+                      colorFilter: ColorFilter.mode(
+                          Colors.black.withOpacity(0.5), BlendMode.overlay),
+                      image: AssetImage("assets/images/bg.png"),
+                      fit: BoxFit.cover,
+                    )),
+                    child: Stack(
+                      children: <Widget>[
+                        Positioned(
+                          left: widht * 0.01,
+                          top: height * 0.57,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                album.title,
+                                style: TextStyle(
+                                    fontSize: widht * 0.06,
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold),
+                                overflow: TextOverflow.clip,
+                              ),
+                              Text(
+                                "Avichi",
+                                style: TextStyle(
+                                    fontSize: widht * 0.04,
+                                    color: Colors.grey.shade300,
+                                    fontWeight: FontWeight.bold),
+                              ),
+                            ],
+                          ),
                         ),
-                      ),
-                      Positioned(
-                        top: height * 0.08,
-                        left: widht * 0.04,
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Image.asset(
-                              'assets/images/Logo.png',
-                              width: widht * 0.4,
-                            ),
-                            SizedBox(
-                              width: widht * 0.05,
-                            ),
-                            Image.asset(
-                              "assets/images/Facebook.png",
-                              width: widht * 0.083,
-                            ),
-                            SizedBox(
-                              width: widht * 0.01,
-                            ),
-                            Image.asset(
-                              "assets/images/Facebook.png",
-                              width: widht * 0.083,
-                            ),
-                            SizedBox(
-                              width: widht * 0.01,
-                            ),
-                            Image.asset(
-                              "assets/images/Facebook.png",
-                              width: widht * 0.083,
-                            ),
-                            SizedBox(
-                              width: widht * 0.01,
-                            ),
-                            Image.asset(
-                              "assets/images/Facebook.png",
-                              width: widht * 0.083,
-                            ),
-                            SizedBox(
-                              width: widht * 0.01,
-                            ),
-                            Image.asset(
-                              "assets/images/Facebook.png",
-                              width: widht * 0.083,
-                            ),
-                          ],
+                        Positioned(
+                          top: height * 0.08,
+                          left: widht * 0.04,
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Image.asset(
+                                'assets/images/Logo.png',
+                                width: widht * 0.4,
+                              ),
+                              SizedBox(
+                                width: widht * 0.05,
+                              ),
+                              Image.asset(
+                                "assets/images/Facebook.png",
+                                width: widht * 0.083,
+                              ),
+                              SizedBox(
+                                width: widht * 0.01,
+                              ),
+                              Image.asset(
+                                "assets/images/Facebook.png",
+                                width: widht * 0.083,
+                              ),
+                              SizedBox(
+                                width: widht * 0.01,
+                              ),
+                              Image.asset(
+                                "assets/images/Facebook.png",
+                                width: widht * 0.083,
+                              ),
+                              SizedBox(
+                                width: widht * 0.01,
+                              ),
+                              Image.asset(
+                                "assets/images/Facebook.png",
+                                width: widht * 0.083,
+                              ),
+                              SizedBox(
+                                width: widht * 0.01,
+                              ),
+                              Image.asset(
+                                "assets/images/Facebook.png",
+                                width: widht * 0.083,
+                              ),
+                            ],
+                          ),
                         ),
-                      ),
 
-                      Positioned(
-                        top: height * 0.25,
-                        left: widht * 0.2,
-                        child: Image.asset(
-                          "assets/images/Circle Pattern.png",
-                          width: widht * 0.6,
+                        Positioned(
+                          top: height * 0.25,
+                          left: widht * 0.2,
+                          child: Image.asset(
+                            "assets/images/Circle Pattern.png",
+                            width: widht * 0.6,
+                          ),
                         ),
-                      ),
-                      Positioned(
-                          left: widht * 0.25,
-                          top: height * 0.27,
-                          child: CircleAvatar(
-                            radius: widht * 0.25,
-                            backgroundImage: NetworkImage(album.bg),
-                          )),
-
-                      Positioned(
-                        left: widht * 0.35,
-                        top: height * 0.68,
-                        child: GestureDetector(
-                            onTap: () {
-                              switchh();
-                            },
-                            child: Icon(
-                              play_pause
-                                  ? Icons.play_circle_outline_rounded
-                                  : Icons.pause_circle_outline_rounded,
-                              color: Colors.white,
-                              size: widht * 0.28,
+                        Positioned(
+                            left: widht * 0.25,
+                            top: height * 0.27,
+                            child: CircleAvatar(
+                              radius: widht * 0.25,
+                              backgroundImage: NetworkImage(album.bg),
                             )),
-                      ),
-                      Positioned(
-                        top: height * 0.86,
-                        left: widht * 0.04,
-                        child: Row(
-                          children: [
-                            Image.asset(
-                              'assets/images/Airplay 1.png',
-                              width: widht * 0.09,
-                            ),
-                            SliderTheme(
+
+                        Positioned(
+                          left: widht * 0.35,
+                          top: height * 0.68,
+                          child: GestureDetector(
+                              onTap: () {
+                                 myAudioModel.audioState=="Playing"? myAudioModel.pauseAudio():myAudioModel.playAudio();
+                              },
+                              child: Icon(
+                                myAudioModel.audioState == "Playing"
+                                    ? Icons.pause_circle_outline_rounded
+                                    : Icons.play_circle_outline_rounded,
+                                color: Colors.white,
+                                size: widht * 0.28,
+                              )),
+                        ),
+                        Positioned(
+                          top: height * 0.86,
+                          left: widht * 0.04,
+                          child: Row(
+                            children: [
+                              Image.asset(
+                                'assets/images/Airplay 1.png',
+                                width: widht * 0.09,
+                              ),
+                              SliderTheme(
                                 data: SliderThemeData(
                                     trackHeight: 5,
                                     thumbShape: RoundSliderThumbShape(
                                         enabledThumbRadius: 5)),
-                                child: slider()),
-                            SizedBox(
-                              width: widht * 0.14,
-                            ),
-                            Image.asset(
-                              'assets/images/Airplay 1.png',
-                              width: widht * 0.09,
-                            ),
-                            SizedBox(
-                              width: widht * 0.03,
-                            ),
-                            Image.asset(
-                              'assets/images/Airplay 1.png',
-                              width: widht * 0.09,
-                            ),
-                          ],
+                                child: Slider(
+                                  value: 2,
+                                  activeColor: Colors.white,
+                                  inactiveColor: Color(0xff707070),
+                                  onChanged: (value) {},
+                                  min: 0,
+                                  max: 4,
+                                ),
+                              ),
+                              SizedBox(
+                                width: widht * 0.14,
+                              ),
+                              Image.asset(
+                                'assets/images/Airplay 1.png',
+                                width: widht * 0.09,
+                              ),
+                              SizedBox(
+                                width: widht * 0.03,
+                              ),
+                              Image.asset(
+                                'assets/images/Airplay 1.png',
+                                width: widht * 0.09,
+                              ),
+                            ],
+                          ),
                         ),
-                      ),
-                      //Container
-                    ], //<Widget>[]
-                  ), //SizedBox
-                );
-              } else {
-                return Container(
-                  child: CircularProgressIndicator(),
-                );
-              }
-            }),
-      ),
+                        //Container
+                      ], //<Widget>[]
+                    ), //SizedBox
+                  );
+                } else {
+                  return Container(
+                    child: CircularProgressIndicator(),
+                  );
+                }
+              }),
+        ),
 
-      //,
+        //,
+      ),
     );
   }
 }

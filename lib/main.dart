@@ -1,13 +1,12 @@
 import 'dart:io';
-
 import 'package:audio_player/home_page.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:audio_player/myauido.dart';
+void main()  {
 
-void main() {
-  HttpOverrides.global= new MyHttpOverrides();
   runApp(MyApp());
 }
-
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
@@ -19,7 +18,9 @@ class MyApp extends StatelessWidget {
        
         primarySwatch: Colors.blue,
       ),
-      home: MyAppp(),
+       home: ChangeNotifierProvider(
+        create: (_)=>MyAudio(),
+        child: MyAppp()),
     );
   }
 }
