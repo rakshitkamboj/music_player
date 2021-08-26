@@ -15,7 +15,7 @@ class Music {
 
       Response response = await _dio.get(_url);
       print('data');
-      print(response.data);
+     // print(response.data);
        Album album = Album.fromJson(response.data);
       return album;
     } on DioError catch (e) {

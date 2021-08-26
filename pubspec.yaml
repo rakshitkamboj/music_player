@@ -36,6 +36,10 @@ dependencies:
   volume: ^1.0.1
   audio_service:
   just_audio:
+  volume_watcher:
+  flutter_volume_slider:
+  share:
+  url_launcher:
   
 
 dev_dependencies:
