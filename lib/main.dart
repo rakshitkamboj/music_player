@@ -3,8 +3,13 @@ import 'package:audio_player/home_page.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:audio_player/myauido.dart';
-void main()  {
-
+import 'package:just_audio_background/just_audio_background.dart';
+void main() async  {
+  await JustAudioBackground.init(
+    androidNotificationChannelId: 'com.ryanheise.bg_demo.channel.audio',
+    androidNotificationChannelName: 'Audio playback',
+    androidNotificationOngoing: true,
+  );
   runApp(MyApp());
 }
 class MyApp extends StatelessWidget {
@@ -18,9 +23,7 @@ class MyApp extends StatelessWidget {
        
         primarySwatch: Colors.blue,
       ),
-       home: ChangeNotifierProvider(
-        create: (_)=>MyAudio(),
-        child: MyAppp()),
+       home: MyAppp(),
 
     );
   }

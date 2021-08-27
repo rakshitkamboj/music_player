@@ -15,7 +15,7 @@ class Album {
   });
 
   factory Album.fromJson(Map<dynamic, dynamic> json) {
-    print(json);
+    // print(json);
     return Album(
       bg: json['coverart'],
         userId: json['nowplaying'],

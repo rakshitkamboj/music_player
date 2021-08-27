@@ -32,10 +32,11 @@ dependencies:
   provider:
   http:
   dio: ^4.0.0
-  audioplayers: ^0.16.1
+#  audioplayers: ^0.19.1
   volume: ^1.0.1
-  audio_service:
+#  audio_service:
   just_audio:
+  just_audio_background: ^0.0.1-beta.1
   
 
 dev_dependencies:

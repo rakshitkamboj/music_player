@@ -10,11 +10,11 @@ class Music {
     _dio = Dio();
   }
    Future fetchmusicinfo() async {
-    print('fetching');
+    // print('fetching');
     try {
 
       Response response = await _dio.get(_url);
-      print('data');
+      // print('data');
       print(response.data);
        Album album = Album.fromJson(response.data);
       return album;
