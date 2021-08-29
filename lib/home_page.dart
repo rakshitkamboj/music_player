@@ -170,22 +170,25 @@ class _MyAppState extends State<MyAppp> {
                             )),
                         child: Stack(
                           children: <Widget>[
-                            Positioned(
-                              left: widht * 0.01,
-                              top: height * 0.57,
+                            Container(
+                              alignment: Alignment.center,
+                              padding: EdgeInsets.only(top: height*0.55),
                               child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                mainAxisAlignment: MainAxisAlignment.center,
+
                                 children: [
-                                  Text(
-                                    album != null
-                                        ? album.title
-                                        : "Please wait..",
-                                    style: TextStyle(
-                                        fontSize: widht * 0.06,
-                                        color: Colors.white,
-                                        fontWeight: FontWeight.bold),
-                                    overflow: TextOverflow.clip,
+                                  Container(
+
+                                    child: Text(
+                                      album != null
+                                          ? album.title
+                                          : "Please wait..",
+                                      style: TextStyle(
+                                          fontSize: widht * 0.06,
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.bold),
+                                      overflow: TextOverflow.clip,
+                                    ),
+                                    alignment: Alignment.center,
                                   ),
                                   Text(
                                     "Avichi",
@@ -322,7 +325,7 @@ class _MyAppState extends State<MyAppp> {
 
                                   },
                                   child: Icon(
-                                    playing
+                                    _player.playing
                                         ? Icons.pause_circle_outline_rounded
                                         : Icons.play_circle_outline_rounded,
                                     color: Colors.white,
