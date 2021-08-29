@@ -37,6 +37,9 @@ dependencies:
 #  audio_service:
   just_audio:
   just_audio_background: ^0.0.1-beta.1
+  share:
+  url_launcher:
+
   
 
 dev_dependencies:

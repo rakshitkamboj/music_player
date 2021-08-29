@@ -22,6 +22,8 @@ import 'package:volume/volume.dart';
 // import 'package:audioplayers/audioplayers.dart';
 import 'package:audio_service/audio_service.dart';
 import 'package:just_audio_background/just_audio_background.dart';
+import 'package:share/share.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 
 
@@ -147,7 +149,7 @@ class _MyAppState extends State<MyAppp> {
       body: FutureBuilder(
           future: fetchData(),
           builder: (context, snapshot) {
-            if (album != null) {
+
               return StreamBuilder(
                 // stream: AudioService.playbackStateStream,
                   builder: (context, snapshot) {
@@ -176,7 +178,9 @@ class _MyAppState extends State<MyAppp> {
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
                                   Text(
-                                    album.title,
+                                    album != null
+                                        ? album.title
+                                        : "Please wait..",
                                     style: TextStyle(
                                         fontSize: widht * 0.06,
                                         color: Colors.white,
@@ -193,50 +197,90 @@ class _MyAppState extends State<MyAppp> {
                                 ],
                               ),
                             ),
+
                             Positioned(
                               top: height * 0.08,
                               left: widht * 0.04,
                               child: Row(
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
-                                  Image.asset(
-                                    'assets/images/Logo.png',
-                                    width: widht * 0.4,
+                                  GestureDetector(
+
+                                    child: Image.asset(
+                                      'assets/images/Logo.png',
+                                      width: widht * 0.4,
+                                    ),
                                   ),
                                   SizedBox(
                                     width: widht * 0.05,
                                   ),
-                                  Image.asset(
-                                    "assets/images/Spotify.png",
-                                    width: widht * 0.083,
+                                  GestureDetector(
+                                    onTap: () {
+                                      launch(
+                                          "https://open.spotify.com/playlist/1HO1VrIFtG2lyZNVlhLDgf?si=bzgDCIpFQGOQ0PdLx0gsvQ"
+                                      );
+                                    },
+                                    child: Image.asset(
+                                      "assets/images/Spotify.png",
+                                      width: widht * 0.083,
+                                    ),
                                   ),
                                   SizedBox(
                                     width: widht * 0.01,
                                   ),
-                                  Image.asset(
-                                    "assets/images/Facebook.png",
-                                    width: widht * 0.083,
+                                  GestureDetector(
+                                    onTap: () {
+                                      launch(
+                                          "https://www.facebook.com/hetstamcafe.nl/"
+                                      );
+                                    },
+                                    child: Image.asset(
+                                      "assets/images/Facebook.png",
+                                      width: widht * 0.083,
+                                    ),
                                   ),
                                   SizedBox(
                                     width: widht * 0.01,
                                   ),
-                                  Image.asset(
-                                    "assets/images/Insyagram.png",
-                                    width: widht * 0.083,
+                                  GestureDetector(
+                                    onTap: () {
+                                      launch(
+                                          "https://www.instagram.com/hetstamcafe.nl/"
+                                      );
+                                    },
+                                    child: Image.asset(
+                                      "assets/images/Insyagram.png",
+                                      width: widht * 0.083,
+                                    ),
                                   ),
                                   SizedBox(
                                     width: widht * 0.01,
                                   ),
-                                  Image.asset(
-                                    "assets/images/email.png",
-                                    width: widht * 0.083,
+                                  GestureDetector(
+                                    onTap:
+                                        () {
+                                      print("fffffnnivn");
+                                    },
+
+
+                                    child: Image.asset(
+                                      "assets/images/email.png",
+                                      width: widht * 0.083,
+                                    ),
                                   ),
                                   SizedBox(
                                     width: widht * 0.01,
                                   ),
-                                  Image.asset(
-                                    "assets/images/Website.png",
-                                    width: widht * 0.083,
+
+                                  GestureDetector(
+                                    onTap: () {
+                                      launch("https://www.hetstamcafe.nl/"
+                                      );
+                                    },
+                                    child: Image.asset(
+                                      "assets/images/Website.png",
+                                      width: widht * 0.083,
+                                    ),
                                   ),
                                 ],
                               ),
@@ -255,7 +299,7 @@ class _MyAppState extends State<MyAppp> {
                                 top: height * 0.27,
                                 child: CircleAvatar(
                                   radius: widht * 0.25,
-                                  backgroundImage: NetworkImage(album.bg),
+                                  backgroundImage: NetworkImage(album!=null?album.bg:"ff"),
                                 )),
 
                             Positioned(
@@ -322,9 +366,14 @@ class _MyAppState extends State<MyAppp> {
                                   SizedBox(
                                     width: widht * 0.03,
                                   ),
-                                  Image.asset(
-                                    'assets/images/Share1.png',
-                                    width: widht * 0.09,
+                                  GestureDetector(
+                                    onTap: () {
+                                      Share.share("Hey, Check out this app");
+                                    },
+                                    child: Image.asset(
+                                      'assets/images/Share1.png',
+                                      width: widht * 0.09,
+                                    ),
                                   ),
                                 ],
                               ),
@@ -335,178 +384,14 @@ class _MyAppState extends State<MyAppp> {
                       );
                   }
               );
-            } else {
-              return Container(
-                child: Container(
-                  height: height * 1,
-                  decoration: BoxDecoration(
-                      image: DecorationImage(
-                        colorFilter: ColorFilter.mode(
-                            Colors.black.withOpacity(0.5), BlendMode.overlay),
-                        image: AssetImage("assets/images/bg.png"),
-                        fit: BoxFit.cover,
-                      )),
-                  child: Stack(
-                    children: <Widget>[
-                      Positioned(
-                        left: widht * 0.01,
-                        top: height * 0.57,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              "Please wait....",
-                              style: TextStyle(
-                                  fontSize: widht * 0.06,
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold),
-                              overflow: TextOverflow.clip,
-                            ),
-                            Text(
-                              "Avichi",
-                              style: TextStyle(
-                                  fontSize: widht * 0.04,
-                                  color: Colors.grey.shade300,
-                                  fontWeight: FontWeight.bold),
-                            ),
-                          ],
-                        ),
-                      ),
-                      Positioned(
-                        top: height * 0.08,
-                        left: widht * 0.04,
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Image.asset(
-                              'assets/images/Logo.png',
-                              width: widht * 0.4,
-                            ),
-                            SizedBox(
-                              width: widht * 0.05,
-                            ),
-                            Image.asset(
-                              "assets/images/Spotify.png",
-                              width: widht * 0.083,
-                            ),
-                            SizedBox(
-                              width: widht * 0.01,
-                            ),
-                            Image.asset(
-                              "assets/images/Facebook.png",
-                              width: widht * 0.083,
-                            ),
-                            SizedBox(
-                              width: widht * 0.01,
-                            ),
-                            Image.asset(
-                              "assets/images/Insyagram.png",
-                              width: widht * 0.083,
-                            ),
-                            SizedBox(
-                              width: widht * 0.01,
-                            ),
-                            Image.asset(
-                              "assets/images/email.png",
-                              width: widht * 0.083,
-                            ),
-                            SizedBox(
-                              width: widht * 0.01,
-                            ),
-                            Image.asset(
-                              "assets/images/Website.png",
-                              width: widht * 0.083,
-                            ),
-                          ],
-                        ),
-                      ),
 
-                      Positioned(
-                        top: height * 0.25,
-                        left: widht * 0.2,
-                        child: Image.asset(
-                          "assets/images/Circle Pattern.png",
-                          width: widht * 0.6,
-                        ),
-                      ),
-                      Positioned(
-                          left: widht * 0.25,
-                          top: height * 0.27,
-                          child: CircleAvatar(
-                            radius: widht * 0.25,
-                            backgroundImage: NetworkImage(""),
-                          )),
-
-                      Positioned(
-                        left: widht * 0.35,
-                        top: height * 0.68,
-                        child: GestureDetector(
-                            onTap: () {
-
-                            },
-                            child: Icon(
-
-                              // ? Icons.pause_circle_outline_rounded
-                              Icons.play_circle_outline_rounded,
-                              color: Colors.white,
-                              size: widht * 0.28,
-                            )),
-                      ),
-                      Positioned(
-                        top: height * 0.86,
-                        left: widht * 0.04,
-                        child: Row(
-                          children: [
-                            Image.asset(
-                              'assets/images/Volume1.png',
-                              width: widht * 0.09,
-                            ),
-                            SliderTheme(
-                                data: SliderThemeData(
-                                    trackHeight: 5,
-                                    thumbShape: RoundSliderThumbShape(
-                                        enabledThumbRadius: 5)),
-                                child: Slider(
-                                  activeColor: Colors.white,
-                                  min: 0.0,
-                                  max: 15.0,
-                                  onChanged: (newRating) async {
-                                    setState(() {
-                                      _sliderValue = newRating;
-                                    });
-                                    await setVol(newRating.toInt());
-                                    await updateVolumes();
-                                  },
-                                  value: _sliderValue,
-                                )),
-                            SizedBox(
-                              width: widht * 0.14,
-                            ),
-                            Image.asset(
-                              'assets/images/Airplay 1.png',
-                              width: widht * 0.09,
-                            ),
-                            SizedBox(
-                              width: widht * 0.03,
-                            ),
-                            Image.asset(
-                              'assets/images/Share1.png',
-                              width: widht * 0.09,
-                            ),
-                          ],
-                        ),
-                      ),
-                      //Container
-                    ], //<Widget>[]
-                  ), //SizedBox
-                ),
-              );
             }
-          }),
+    )
     );
+          }
+
 
     //,
 
   }
-}
+
