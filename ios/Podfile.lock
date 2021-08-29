@@ -1,0 +1,103 @@
+PODS:
+  - audio_service (0.0.1):
+    - Flutter
+  - audio_session (0.0.1):
+    - Flutter
+  - connectivity (0.0.1):
+    - Flutter
+    - Reachability
+  - Flutter (1.0.0)
+  - flutter_to_airplay (0.0.1):
+    - Flutter
+    - Mux-Stats-AVPlayer
+  - FMDB (2.7.5):
+    - FMDB/standard (= 2.7.5)
+  - FMDB/standard (2.7.5)
+  - just_audio (0.0.1):
+    - Flutter
+  - Mux-Stats-AVPlayer (2.5.0):
+    - Mux-Stats-Core (~> 3.4)
+  - Mux-Stats-Core (3.4.0)
+  - path_provider (0.0.1):
+    - Flutter
+  - Reachability (3.2)
+  - share (0.0.1):
+    - Flutter
+  - sqflite (0.0.2):
+    - Flutter
+    - FMDB (>= 2.7.5)
+  - url_launcher (0.0.1):
+    - Flutter
+  - volume_control (0.0.1):
+    - Flutter
+  - volume_watcher (0.0.1):
+    - Flutter
+
+DEPENDENCIES:
+  - audio_service (from `.symlinks/plugins/audio_service/ios`)
+  - audio_session (from `.symlinks/plugins/audio_session/ios`)
+  - connectivity (from `.symlinks/plugins/connectivity/ios`)
+  - Flutter (from `Flutter`)
+  - flutter_to_airplay (from `.symlinks/plugins/flutter_to_airplay/ios`)
+  - just_audio (from `.symlinks/plugins/just_audio/ios`)
+  - path_provider (from `.symlinks/plugins/path_provider/ios`)
+  - share (from `.symlinks/plugins/share/ios`)
+  - sqflite (from `.symlinks/plugins/sqflite/ios`)
+  - url_launcher (from `.symlinks/plugins/url_launcher/ios`)
+  - volume_control (from `.symlinks/plugins/volume_control/ios`)
+  - volume_watcher (from `.symlinks/plugins/volume_watcher/ios`)
+
+SPEC REPOS:
+  trunk:
+    - FMDB
+    - Mux-Stats-AVPlayer
+    - Mux-Stats-Core
+    - Reachability
+
+EXTERNAL SOURCES:
+  audio_service:
+    :path: ".symlinks/plugins/audio_service/ios"
+  audio_session:
+    :path: ".symlinks/plugins/audio_session/ios"
+  connectivity:
+    :path: ".symlinks/plugins/connectivity/ios"
+  Flutter:
+    :path: Flutter
+  flutter_to_airplay:
+    :path: ".symlinks/plugins/flutter_to_airplay/ios"
+  just_audio:
+    :path: ".symlinks/plugins/just_audio/ios"
+  path_provider:
+    :path: ".symlinks/plugins/path_provider/ios"
+  share:
+    :path: ".symlinks/plugins/share/ios"
+  sqflite:
+    :path: ".symlinks/plugins/sqflite/ios"
+  url_launcher:
+    :path: ".symlinks/plugins/url_launcher/ios"
+  volume_control:
+    :path: ".symlinks/plugins/volume_control/ios"
+  volume_watcher:
+    :path: ".symlinks/plugins/volume_watcher/ios"
+
+SPEC CHECKSUMS:
+  audio_service: f509d65da41b9521a61f1c404dd58651f265a567
+  audio_session: 4f3e461722055d21515cf3261b64c973c062f345
+  connectivity: c4130b2985d4ef6fd26f9702e886bd5260681467
+  Flutter: 434fef37c0980e73bb6479ef766c45957d4b510c
+  flutter_to_airplay: 3194fe6e4ca6ba1d9529c3c4194c32b9610d990f
+  FMDB: 2ce00b547f966261cd18927a3ddb07cb6f3db82a
+  just_audio: baa7252489dbcf47a4c7cc9ca663e9661c99aafa
+  Mux-Stats-AVPlayer: f36338adcf1cdda3c71424401934684011420594
+  Mux-Stats-Core: 95905303d4b7fdf3996afef5d203b69becc08c5a
+  path_provider: abfe2b5c733d04e238b0d8691db0cfd63a27a93c
+  Reachability: 33e18b67625424e47b6cde6d202dce689ad7af96
+  share: 0b2c3e82132f5888bccca3351c504d0003b3b410
+  sqflite: 6d358c025f5b867b29ed92fc697fd34924e11904
+  url_launcher: 6fef411d543ceb26efce54b05a0a40bfd74cbbef
+  volume_control: ae2b373c092d9ff5e57f704e9fa5e3098cc16d07
+  volume_watcher: 6271ae8f78dfafa401c8dac4d117c35576568693
+
+PODFILE CHECKSUM: aafe91acc616949ddb318b77800a7f51bffa2a4c
+
+COCOAPODS: 1.10.1

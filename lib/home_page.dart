@@ -16,15 +16,17 @@ import 'package:flutter/services.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:just_audio_background/just_audio_background.dart';
 // import 'package:just_audio_example/common.dart';
-import 'package:rxdart/rxdart.dart';
-import 'package:provider/provider.dart';
-import 'package:volume/volume.dart';
+import 'dart:async';
 // import 'package:audioplayers/audioplayers.dart';
 import 'package:audio_service/audio_service.dart';
 import 'package:just_audio_background/just_audio_background.dart';
 import 'package:share/share.dart';
 import 'package:url_launcher/url_launcher.dart';
-
+// import 'package:volume_control/volume_control.dart';
+import 'package:volume_watcher/volume_watcher.dart';
+import 'package:flutter_to_airplay/flutter_to_airplay.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:connectivity/connectivity.dart';
 
 
 class MyAppp extends StatefulWidget {
@@ -37,22 +39,20 @@ class MyAppp extends StatefulWidget {
 class _MyAppState extends State<MyAppp> {
   double _sliderValue = 0.0;
   int maxVol, currentVol;
+  final url = "https://hetstamcafe.stream-server.nl/stream";
+  AudioPlayer _player;
+  bool isPaused=false;
+  Album album;
+  String savedTitle="";
+  String _platformVersion = 'Unknown';
+  double _val = 0.5;
+  Timer timer;
 
-  Future<void> initPlatformState() async {
-    await Volume.controlVolume(AudioManager
-        .STREAM_MUSIC); // you can change which volume you want to change.
-  }
+
   static int ff = 0;
 
-  updateVolumes() async {
-    maxVol = await Volume.getMaxVol;
-    currentVol = await Volume.getVol;
-    setState(() {});
-  }
 
-  setVol(int i) async {
-    await Volume.setVol(i);
-  }
+
   @override
   void dispose() {
     _player.dispose();
@@ -75,8 +75,8 @@ class _MyAppState extends State<MyAppp> {
             'https://hetstamcafe.stream-server.nl/stream'),
         tag: MediaItem(
           id: 'only',
-          album: "Het StamCafe",
-          title: "$temp",
+          album:  temp.split('-').first,
+          title: temp.split('-').last,
           artUri: Uri.parse(
               album.bg),
         ),
@@ -93,35 +93,71 @@ class _MyAppState extends State<MyAppp> {
   @override
   void initState() {
     super.initState();
-    _player = AudioPlayer();
+
+   initPlayer();
     fetchData();
+    initAirplay();
+    initVolumeState();
+    VolumeWatcher.hideVolumeView = true;
+  }
+  Future<void> initVolumeState() async {
+    if (!mounted) return;
+
+    //read the current volume
+    _val = await VolumeWatcher.getCurrentVolume;
+    setState(() {
+
+    });
+  }
+
+
+  initPlayer() async {
+    if(_player!=null)
+      _player.dispose();
+
+    _player = AudioPlayer();
   }
 
 
 
 
 
-  Album album;
-  String savedTitle="";
-
   fetchData() async {
+    var temp;
+    var connectivityResult = await (Connectivity().checkConnectivity());
+    if (connectivityResult == ConnectivityResult.mobile) {
+      // I am connected to a mobile network.
+      temp  = await Music().fetchmusicinfo();
+    } else if (connectivityResult == ConnectivityResult.wifi) {
+      // I am connected to a wifi network.
+      temp  = await Music().fetchmusicinfo();
+    }
 
-    var temp  = await Music().fetchmusicinfo();
-    if(temp!=null)
+
+
+   if(temp!=null)
       album=temp;
-    setState(() {});
+
+
+setState(() {});
 
     if(album!=null){
 
 
       if(savedTitle!=album.title && savedTitle.isNotEmpty){
-        _player.dispose();
+
+       await _player.dispose();
+       await Future.delayed(Duration(milliseconds: 50));
+
         _player = AudioPlayer();
-        _init();
-        _player.play();
+
+       // await  _init();
+       //  _player.play();
       }
       else if(savedTitle.isEmpty){
-        _init();
+        await _init();
+        // await _player.load();
+        // await _player.play();
       }
        savedTitle =album.title;
       setState(() {
@@ -130,10 +166,22 @@ class _MyAppState extends State<MyAppp> {
     }
   }
 
+  Future<void> initAirplay() async {
+    String platformVersion;
+    // Platform messages may fail, so we use a try/catch PlatformException.
+    try {
+      platformVersion = await FlutterToAirplay.platformVersion;
+    } on PlatformException {
+      platformVersion = 'Failed to get platform version.';
+    }
+    if (!mounted) return;
 
-  final url = "https://hetstamcafe.stream-server.nl/stream";
-   AudioPlayer _player;
-  bool isPaused=false;
+    setState(() {
+      _platformVersion = platformVersion;
+    });
+  }
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -141,58 +189,77 @@ class _MyAppState extends State<MyAppp> {
         .of(context)
         .size
         .height;
-    double widht = MediaQuery
+    double width = MediaQuery
         .of(context)
         .size
         .width;
+
+    // if(savedTitle.isEmpty)
+    //   _player.play();
+
+
     return Scaffold(
       body: FutureBuilder(
           future: fetchData(),
           builder: (context, snapshot) {
 
-              return StreamBuilder(
-                // stream: AudioService.playbackStateStream,
-                  builder: (context, snapshot) {
-                    final playing = snapshot.data?.playing ?? false;
-                    // if(ss!=album.title)
-                    // AudioService.start(backgroundTaskEntrypoint: _backgroundTaksentrypoint,params: {"url":url,"image":album.bg});
-
-                    return
-                      Container(
+              return Container(
                         height: height * 1,
                         decoration: BoxDecoration(
                             image: DecorationImage(
                               colorFilter: ColorFilter.mode(
                                   Colors.black.withOpacity(0.5),
                                   BlendMode.overlay),
-                              image: AssetImage("assets/images/bg.png"),
+                              image: AssetImage("assets/images/bg2.png"),
                               fit: BoxFit.cover,
                             )),
                         child: Stack(
+                          alignment: Alignment.center,
                           children: <Widget>[
                             Positioned(
-                              left: widht * 0.01,
+
                               top: height * 0.57,
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  Text(
-                                    album != null
-                                        ? album.title
-                                        : "Please wait..",
-                                    style: TextStyle(
-                                        fontSize: widht * 0.06,
+                                  album==null ?Center(
+                                    child: Container(
+                                      height: 25,
+                                      width: 100,
+                                      child: SpinKitWave(
                                         color: Colors.white,
-                                        fontWeight: FontWeight.bold),
-                                    overflow: TextOverflow.clip,
+                                        size: width * 0.125,
+                                      ),
+                                    ),
+                                  )  :Container(
+                                    width :width*0.95,
+
+
+                                    child: Text(
+                                      album != null
+                                          ? album.title.split('-').last
+                                          : "Please wait..",
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                          fontSize: width * 0.06,
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.bold),
+                                      overflow: TextOverflow.clip,
+                                    ),
                                   ),
-                                  Text(
-                                    "Avichi",
-                                    style: TextStyle(
-                                        fontSize: widht * 0.04,
-                                        color: Colors.grey.shade300,
-                                        fontWeight: FontWeight.bold),
+                                  album==null?Container():Container(
+                                    child: Padding(
+                                      padding: const EdgeInsets.only(top:15),
+                                      child: Text(
+                                        album.title.split('-').first,
+                                        textAlign: TextAlign.center,
+                                        style: TextStyle(
+                                            fontSize: width * 0.04,
+                                            color: Colors.grey.shade300,
+                                            fontWeight: FontWeight.bold),
+                                      ),
+                                    ),
                                   ),
                                 ],
                               ),
@@ -200,7 +267,7 @@ class _MyAppState extends State<MyAppp> {
 
                             Positioned(
                               top: height * 0.08,
-                              left: widht * 0.04,
+                              left: width * 0.04,
                               child: Row(
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
@@ -208,11 +275,11 @@ class _MyAppState extends State<MyAppp> {
 
                                     child: Image.asset(
                                       'assets/images/Logo.png',
-                                      width: widht * 0.4,
+                                      width: width * 0.4,
                                     ),
                                   ),
                                   SizedBox(
-                                    width: widht * 0.05,
+                                    width: width * 0.05,
                                   ),
                                   GestureDetector(
                                     onTap: () {
@@ -222,11 +289,11 @@ class _MyAppState extends State<MyAppp> {
                                     },
                                     child: Image.asset(
                                       "assets/images/Spotify.png",
-                                      width: widht * 0.083,
+                                      width: width * 0.083,
                                     ),
                                   ),
                                   SizedBox(
-                                    width: widht * 0.01,
+                                    width: width * 0.01,
                                   ),
                                   GestureDetector(
                                     onTap: () {
@@ -236,11 +303,11 @@ class _MyAppState extends State<MyAppp> {
                                     },
                                     child: Image.asset(
                                       "assets/images/Facebook.png",
-                                      width: widht * 0.083,
+                                      width: width * 0.083,
                                     ),
                                   ),
                                   SizedBox(
-                                    width: widht * 0.01,
+                                    width: width * 0.01,
                                   ),
                                   GestureDetector(
                                     onTap: () {
@@ -250,11 +317,11 @@ class _MyAppState extends State<MyAppp> {
                                     },
                                     child: Image.asset(
                                       "assets/images/Insyagram.png",
-                                      width: widht * 0.083,
+                                      width: width * 0.083,
                                     ),
                                   ),
                                   SizedBox(
-                                    width: widht * 0.01,
+                                    width: width * 0.01,
                                   ),
                                   GestureDetector(
                                     onTap:
@@ -265,11 +332,11 @@ class _MyAppState extends State<MyAppp> {
 
                                     child: Image.asset(
                                       "assets/images/email.png",
-                                      width: widht * 0.083,
+                                      width: width * 0.083,
                                     ),
                                   ),
                                   SizedBox(
-                                    width: widht * 0.01,
+                                    width: width * 0.01,
                                   ),
 
                                   GestureDetector(
@@ -279,7 +346,7 @@ class _MyAppState extends State<MyAppp> {
                                     },
                                     child: Image.asset(
                                       "assets/images/Website.png",
-                                      width: widht * 0.083,
+                                      width: width * 0.083,
                                     ),
                                   ),
                                 ],
@@ -288,22 +355,32 @@ class _MyAppState extends State<MyAppp> {
 
                             Positioned(
                               top: height * 0.25,
-                              left: widht * 0.2,
+                              left: width * 0.2,
                               child: Image.asset(
                                 "assets/images/Circle Pattern.png",
-                                width: widht * 0.6,
+                                width: width * 0.6,
                               ),
                             ),
                             Positioned(
-                                left: widht * 0.25,
+                                left: width * 0.25,
                                 top: height * 0.27,
-                                child: CircleAvatar(
-                                  radius: widht * 0.25,
+                                child: album==null?CircleAvatar(
+                                  backgroundColor: Colors.black38,
+                                  radius: width * 0.25,
+                                  child: Center(
+                                    child: SpinKitRipple(
+                                      color: Colors.white,
+                                      size: width * 0.35,
+                                    ),
+                                  ),
+                                ) : CircleAvatar(
+                                  radius: width * 0.25,
+                                  backgroundColor: Colors.black38,
                                   backgroundImage: NetworkImage(album!=null?album.bg:"ff"),
                                 )),
 
                             Positioned(
-                              left: widht * 0.35,
+                              left: width * 0.35,
                               top: height * 0.68,
                               child: GestureDetector(
                                   onTap: () async {
@@ -322,68 +399,97 @@ class _MyAppState extends State<MyAppp> {
 
                                   },
                                   child: Icon(
-                                    playing
+                                    _player.playing
                                         ? Icons.pause_circle_outline_rounded
                                         : Icons.play_circle_outline_rounded,
                                     color: Colors.white,
-                                    size: widht * 0.28,
+                                    size: width * 0.28,
                                   )),
                             ),
                             Positioned(
                               top: height * 0.86,
-                              left: widht * 0.04,
-                              child: Row(
-                                children: [
-                                  Image.asset(
-                                    'assets/images/Volume1.png',
-                                    width: widht * 0.09,
-                                  ),
-                                  SliderTheme(
-                                      data: SliderThemeData(
-                                          trackHeight: 5,
-                                          thumbShape: RoundSliderThumbShape(
-                                              enabledThumbRadius: 5)),
-                                      child: Slider(
-                                        activeColor: Colors.white,
-                                        min: 0.0,
-                                        max: 15.0,
-                                        onChanged: (newRating) async {
-                                          setState(() {
-                                            _sliderValue = newRating;
-                                          });
-                                          await setVol(newRating.toInt());
-                                          await updateVolumes();
-                                        },
-                                        value: _sliderValue,
-                                      )),
-                                  SizedBox(
-                                    width: widht * 0.14,
-                                  ),
-                                  Image.asset(
-                                    'assets/images/Airplay 1.png',
-                                    width: widht * 0.09,
-                                  ),
-                                  SizedBox(
-                                    width: widht * 0.03,
-                                  ),
-                                  GestureDetector(
-                                    onTap: () {
-                                      Share.share("Hey, Check out this app");
-                                    },
-                                    child: Image.asset(
-                                      'assets/images/Share1.png',
-                                      width: widht * 0.09,
+
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(horizontal: 8),
+                                child: Row(
+                                  children: [
+                                    Image.asset(
+                                      'assets/images/Volume1.png',
+                                      width: width * 0.09,
                                     ),
+                                    VolumeWatcher(
+                                      child : SliderTheme(
+                                        data: SliderThemeData(
+                                            trackHeight: 5,
+
+
+                                            thumbShape: RoundSliderThumbShape(
+                                                enabledThumbRadius: 6)),
+                                        child: Center(
+                                            child: Slider(
+                                              inactiveColor: Color(0xff707070),
+                                                activeColor: Colors.white,
+                                                value:_val,min:0,max:1,divisions: 100,onChanged:(val){
+                                              _val = val;
+                                              setState(() {});
+
+                                              print("val:${val}");
+                                            })
+                                        )
+
+                                        ,),
+                                      onVolumeChangeListener: (double volume) {
+                                        ///do sth.
+                                        ///
+
+                                        _val =volume;
+                                        setState(() {
+
+                                        });
+                                      },
+                                    ),
+
+
+                                    SizedBox(
+                                      width: width * 0.075,
+                                    ),
+                                  AirPlayRoutePickerView(
+                                    tintColor: Colors.white,
+                                    activeTintColor: Colors.white,
+                                    backgroundColor: Colors.transparent,
+                                    height: 55,
+                                    width: 55,
                                   ),
-                                ],
+                                    // GestureDetector(
+                                    //   onTap: (){
+                                    //
+                                    //   },
+                                    //   child: Image.asset(
+                                    //     'assets/images/Airplay 1.png',
+                                    //     width: width * 0.09,
+                                    //   ),
+                                    // ),
+                                    SizedBox(
+                                      width: width * 0.03,
+                                    ),
+                                    GestureDetector(
+                                      onTap: () {
+                                        Share.share("Hey, Check out this app");
+                                      },
+                                      child: Image.asset(
+                                        'assets/images/Share1.png',
+                                        width: width * 0.09,
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               ),
                             ),
                             //Container
                           ], //<Widget>[]
                         ), //SizedBox
                       );
-                  }
-              );
+
 
             }
     )
